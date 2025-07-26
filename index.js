@@ -6,40 +6,23 @@ app.use(cors());
 
 // Route test
 app.get('/', (req, res) => {
-  res.send('Timestamp Microservice API');
+  res.send('Request Header Parser Microservice');
 });
 
-// API endpoint
-app.get('/api/:date?', (req, res) => {
-  let dateString = req.params.date;
+// API 
+app.get('/api/whoami', (req, res) => {
+  const ipaddress = req.ip || req.connection.remoteAddress || req.headers['x-forwarded-for'];
+  const language = req.headers['accept-language'];
+  const software = req.headers['user-agent'];
 
-  if (!dateString) {
-    const now = new Date();
-    return res.json({
-      unix: now.getTime(),
-      utc: now.toUTCString()
-    });
-  }
-
-  
-  if (/^\d+$/.test(dateString)) {
-    dateString = parseInt(dateString);
-  }
-
-  const date = new Date(dateString);
-
-  if (date.toString() === "Invalid Date") {
-    return res.json({ error: "Invalid Date" });
-  }
-
-  return res.json({
-    unix: date.getTime(),
-    utc: date.toUTCString()
+  res.json({
+    ipaddress: ipaddress,
+    language: language,
+    software: software
   });
 });
 
-// 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server running on port http://localhost:${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });
